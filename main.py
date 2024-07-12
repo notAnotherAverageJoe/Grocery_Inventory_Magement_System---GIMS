@@ -40,7 +40,7 @@ def add_item(category):
 def display_inventory():
     st.header("Inventory Management System")
 
-    categories = ['grocery', 'meat','produce']
+    categories = ['grocery', 'meat', 'produce']
     selected_category = st.sidebar.selectbox("Select Category", categories)
 
     # Store selected category in session state
@@ -58,45 +58,43 @@ def display_inventory():
         add_item('produce')
 
     st.subheader(f"{selected_category.capitalize()} Inventory:")
+    
     if selected_category == 'grocery':
         items = Grocery.get_all_items()
-        for item in items:
-            col1, col2, col3 = st.columns([2, 1, 1])
-            with col1:
-                st.write(f"Item: {item.item_name}, Stock: {item.stock}, Expiration Date: {item.expiration_date}")
-            with col2:
-                if st.button(f"Delete {item.item_name}", key=f"delete_{item.item_name}"):
-                    Grocery.delete_item(item.item_name)
-                    st.success(f"{item.item_name} deleted successfully!")
-                    st.rerun()
-                    
     elif selected_category == 'meat':
         items = Meat.get_all_items()
-        for item in items:
-            col1, col2, col3 = st.columns([2, 1, 1])
-            with col1:
-                st.write(f"Item: {item.item_name}, Stock: {item.stock}, Cut Type: {item.cut_type}")
-            with col2:
-                if st.button(f"Delete {item.item_name}", key=f"delete_{item.item_name}"):
-                    Meat.delete_item(item.item_name)
-                    st.success(f"{item.item_name} deleted successfully!")
-                    st.rerun()
-                    
     elif selected_category == 'produce':
         items = Produce.get_all_items()
-        for item in items:
-            col1, col2, col3 = st.columns([2, 1, 1])
-            with col1:
-                st.write(f"Item: {item.item_name}, Stock: {item.stock}, In Season: {item.in_season}")
-            with col2:
-                if st.button(f"Delete {item.item_name}", key=f"delete_{item.item_name}"):
+    
+    num_columns = 3  # Number of columns in the grid
+    columns = st.columns(num_columns)
+    
+    for index, item in enumerate(items):
+        col = columns[index % num_columns]
+        with col:
+            st.write(f"**Item:** {item.item_name}")
+            st.write(f"**Stock:** {item.stock}")
+            if selected_category == 'grocery':
+                st.write(f"**Expiration Date:** {item.expiration_date}")
+            elif selected_category == 'meat':
+                st.write(f"**Cut Type:** {item.cut_type}")
+            elif selected_category == 'produce':
+                st.write(f"**In Season:** {item.in_season}")
+            if st.button(f"Delete {item.item_name}", key=f"delete_{item.item_name}"):
+                if selected_category == 'grocery':
+                    Grocery.delete_item(item.item_name)
+                elif selected_category == 'meat':
                     Meat.delete_item(item.item_name)
-                    st.success(f"{item.item_name} deleted successfully!")
-                    st.rerun()
+                elif selected_category == 'produce':
+                    Produce.delete_item(item.item_name)
+                st.success(f"{item.item_name} deleted successfully!")
+                st.experimental_rerun()
+            st.markdown("---")
 
+# Function to update inventory
 def update_inventory_page():
     st.header("Update Inventory")
-    categories = ['grocery', 'meat','produce']
+    categories = ['grocery', 'meat', 'produce']
     selected_category = st.selectbox("Select Category to Update", categories)
 
     if selected_category == 'grocery':
@@ -106,6 +104,7 @@ def update_inventory_page():
             if st.button(f"Update {item.item_name} Stock"):
                 Grocery.update_stock(item.item_name, new_stock)
                 st.success(f"{item.item_name} stock updated successfully to {new_stock}")
+                
     elif selected_category == 'meat':
         items = Meat.get_all_items()
         for item in items:
@@ -121,7 +120,8 @@ def update_inventory_page():
             if st.button(f"Update {item.item_name} Stock"):
                 Produce.update_stock(item.item_name, new_stock)
                 st.success(f"{item.item_name} stock updated successfully to {new_stock}")
-                
+
+# Function to add custom CSS
 def add_custom_css():
     with open("styles.css") as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)

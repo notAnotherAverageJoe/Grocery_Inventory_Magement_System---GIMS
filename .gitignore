@@ -134,3 +134,15 @@ dmypy.json
 
 # Streamlit secrets
 .secrets.toml
+# Ignore Python compiled files
+__pycache__/
+*.py[cod]
+
+# Ignore environment variables file
+.env
+
+# Ignore virtual environment directory
+venv/
+
+# Ignore Streamlit temporary files
+.streamlit/

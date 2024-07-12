@@ -15,7 +15,7 @@ class Produce(Inventory):
         cur = conn.cursor()
         cur.execute(
             "INSERT INTO produce (item_name, stock, in_season) VALUES (%s, %s, %s)",
-            (self.item_name, self.stock, self.cut_type)
+            (self.item_name, self.stock, self.in_season)
         )
         conn.commit()
         cur.close()
