@@ -1,0 +1,14 @@
+/* styles.css */
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+.stButton>button {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.stButton>button:hover {
+    background-color: #45a049;
+    color: white;
+}
