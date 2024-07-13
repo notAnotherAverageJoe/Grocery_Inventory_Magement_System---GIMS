@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from models.grocery import Grocery
 from models.meat import Meat
 from models.produce import Produce
+from models.bakery import Bakery
 import datetime
 import os
 
@@ -28,6 +29,9 @@ def add_item(category):
     elif category == 'produce':
         in_season = st.text_input("Is in season? (yes/no)")
         item = Produce(session_state.item_name, session_state.stock, in_season)
+    elif category == 'bakery':
+        pastry_type = st.text_input("Pastry type? (Bread/Cake/Cookie etc)")
+        item = Bakery(session_state.item_name, session_state.stock, pastry_type)
 
     if st.button(f"Add {category.capitalize()}"):
         try:
@@ -40,7 +44,7 @@ def add_item(category):
 def display_inventory():
     st.header("Inventory Management System")
 
-    categories = ['grocery', 'meat', 'produce']
+    categories = ['grocery', 'meat', 'produce','bakery']
     selected_category = st.sidebar.selectbox("Select Category", categories)
 
     # Store selected category in session state
@@ -56,6 +60,8 @@ def display_inventory():
         add_item('meat')
     elif selected_category == 'produce':
         add_item('produce')
+    elif selected_category == 'bakery':
+        add_item('bakery')
 
     st.subheader(f"{selected_category.capitalize()} Inventory:")
     
@@ -65,6 +71,8 @@ def display_inventory():
         items = Meat.get_all_items()
     elif selected_category == 'produce':
         items = Produce.get_all_items()
+    elif selected_category == 'bakery':
+        items = Bakery.get_all_items()
     
     num_columns = 3  # Number of columns in the grid
     columns = st.columns(num_columns)
@@ -80,6 +88,9 @@ def display_inventory():
                 st.write(f"**Cut Type:** {item.cut_type}")
             elif selected_category == 'produce':
                 st.write(f"**In Season:** {item.in_season}")
+            elif selected_category == 'bakery':
+                st.write(f"**Pastry Type:** {item.pastry_type}")
+                
             if st.button(f"Delete {item.item_name}", key=f"delete_{item.item_name}"):
                 if selected_category == 'grocery':
                     Grocery.delete_item(item.item_name)
@@ -87,14 +98,16 @@ def display_inventory():
                     Meat.delete_item(item.item_name)
                 elif selected_category == 'produce':
                     Produce.delete_item(item.item_name)
+                elif selected_category == 'bakery':
+                    Bakery.delete_item(item.item_name)
                 st.success(f"{item.item_name} deleted successfully!")
-                st.experimental_rerun()
+                st.rerun()
             st.markdown("---")
 
 # Function to update inventory
 def update_inventory_page():
     st.header("Update Inventory")
-    categories = ['grocery', 'meat', 'produce']
+    categories = ['grocery', 'meat', 'produce','bakery']
     selected_category = st.selectbox("Select Category to Update", categories)
 
     if selected_category == 'grocery':
@@ -119,6 +132,14 @@ def update_inventory_page():
             new_stock = st.slider(f"Update Stock for {item.item_name}", 0, 1000, item.stock)
             if st.button(f"Update {item.item_name} Stock"):
                 Produce.update_stock(item.item_name, new_stock)
+                st.success(f"{item.item_name} stock updated successfully to {new_stock}")
+    
+    elif selected_category == 'bakery':
+        items = Bakery.get_all_items()
+        for item in items:
+            new_stock = st.slider(f"Update Stock for {item.item_name}", 0, 1000, item.stock)
+            if st.button(f"Update {item.item_name} Stock"):
+                Bakery.update_stock(item.item_name, new_stock)
                 st.success(f"{item.item_name} stock updated successfully to {new_stock}")
 
 # Function to add custom CSS
